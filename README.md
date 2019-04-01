@@ -3,10 +3,15 @@
 This Library can help you to not using the whole overkill telegram Library,
 it can save your time to develope telegram webhook just for binding the callback URL
 
+## GoDoc
+[telegramwebhook Go-doc](https://godoc.org/github.com/tanzilgr2288/telegramwebhook)
+
 ## What have done
 1. Set WebHook Without Cert
 2. Get WebHook Info
 3. Unbind / delete Webhook instance from telegram
+4. SendMessage with Reply Mode
+5. SendMessage
 
 ## What should do in the future
 1. Set Webhook with cert
@@ -74,6 +79,40 @@ func main() {
   // DeleteWebHookInstance(token string)
   // will return you ReturnSetWebHookAndDelete struct
 	result, err := telegramwebhook.DeleteWebHookInstance("token")
+}
+
+```
+
+## Send Message with reply Mode
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/tanzilgr2288/telegramwebhook"
+)
+
+func main() {
+  // SendMessageReplyMode(chatID string, message string, replyID string, token string)
+  // will return you ReturnSendMessage struct
+	result, err := telegramwebhook.SendMessageReplyMode("chatId", "message", "replyID", "token")
+}
+
+```
+
+## Send Message
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/tanzilgr2288/telegramwebhook"
+)
+
+func main() {
+  // SendMessage(chatID string, message string, token string)
+  // will return you ReturnSendMessage struct
+	result, err := telegramwebhook.SendMessage("chatId", "message", "token")
 }
 
 ```
