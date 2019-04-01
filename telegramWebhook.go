@@ -39,6 +39,52 @@ type ResultGetWebhookInfo struct {
 	LastErrorMessage     string   `json:"last_error_message" bson:"last_error_message" query:"last_error_message" form:"last_error_message"`
 }
 
+// FromTelegram this sturct for handle from return from telegram
+type FromTelegram struct {
+	ID           string `json:"id" bson:"id" query:"id" form:"id"`
+	IsBot        bool   `json:"is_bot" bson:"is_bot" query:"is_bot" form:"is_bot"`
+	FirstName    string `json:"first_name" bson:"first_name" query:"first_name" form:"first_name"`
+	LastName     string `json:"last_name" bson:"last_name" query:"last_name" form:"last_name"`
+	Username     string `json:"username" bson:"username" query:"username" form:"username"`
+	LanguageCode string `json:"language_code" bson:"language_code" query:"language_code" form:"language_code"`
+}
+
+// ChatTelegram this struct for handler chat from telegram
+type ChatTelegram struct {
+	ID        string `json:"id" bson:"id" query:"id" form:"id"`
+	FirstName string `json:"first_name" bson:"first_name" query:"first_name" form:"first_name"`
+	LastName  string `json:"last_name" bson:"last_name" query:"last_name" form:"last_name"`
+	Username  string `json:"username" bson:"username" query:"username" form:"username"`
+	Type      string `json:"type" bson:"type" query:"type" form:"type"`
+}
+
+// ReplyToMessage this struct for handler ReplyMessage from telegram
+type ReplyToMessage struct {
+	MessageID string       `json:"message_id" bson:"message_id" query:"message_id" form:"message_id"`
+	From      FromTelegram `json:"from" bson:"from" query:"from" form:"from"`
+	Chat      ChatTelegram `json:"chat" bson:"chat" query:"chat" form:"chat"`
+	Date      string       `json:"date" bson:"date" query:"date" form:"date"`
+	Text      string       `json:"text" bson:"text" query:"text" form:"text"`
+}
+
+// ResultSendMessage this struct for handler the result send message with reply Mode and normal
+type ResultSendMessage struct {
+	MessageID      string         `json:"message_id" bson:"message_id" query:"message_id" form:"message_id"`
+	From           FromTelegram   `json:"from" bson:"from" query:"from" form:"from"`
+	Chat           ChatTelegram   `json:"chat" bson:"chat" query:"chat" form:"chat"`
+	Date           string         `json:"date" bson:"date" query:"date" form:"date"`
+	Text           string         `json:"text" bson:"text" query:"text" form:"text"`
+	ReplyToMessage ReplyToMessage `json:"reply_to_message" bson:"reply_to_message" query:"reply_to_message" form:"reply_to_message"`
+}
+
+// ReturnSendMessage this struct for handler the return send message with reply Mode and normal from Telegram API
+type ReturnSendMessage struct {
+	Ok          bool              `json:"ok" bson:"ok" query:"ok" form:"ok"`
+	Result      ResultSendMessage `json:"result" bson:"result" query:"result" form:"result"`
+	HTTPCODE    int
+	HTTPMessage string
+}
+
 // SetWebhook this function for setting webbook into telegram official API
 func SetWebhook(callbackURL string, maxConnection int, allowUpdate []string, token string) (ReturnSetWebHookAndDelete, error) {
 
@@ -114,6 +160,63 @@ func DeleteWebHookInstance(token string) (ReturnSetWebHookAndDelete, error) {
 
 	// make the data more human vision
 	var returnAction ReturnSetWebHookAndDelete
+	returnAction.HTTPCODE = response.StatusCode
+	returnAction.HTTPMessage = response.Status
+	json.NewDecoder(response.Body).Decode(&returnAction)
+
+	return returnAction, nil
+}
+
+// SendMessageReplyMode this function for send message to the chatID with reply the previous Message
+func SendMessageReplyMode(chatID string, message string, replyID string, token string) (ReturnSendMessage, error) {
+	telegramURLOfficial := "https://api.telegram.org/bot" + token + "/sendMessage"
+
+	request, _ := http.NewRequest("POST", telegramURLOfficial, nil)
+
+	q := request.URL.Query()
+	q.Add("chat_id", chatID)
+	q.Add("text", message)
+	q.Add("reply_to_message_id", replyID)
+
+	request.URL.RawQuery = q.Encode()
+	client := &http.Client{}
+	response, err := client.Do(request)
+
+	if err != nil {
+		return ReturnSendMessage{}, err
+	}
+	defer response.Body.Close()
+
+	// make the data more human vision
+	var returnAction ReturnSendMessage
+	returnAction.HTTPCODE = response.StatusCode
+	returnAction.HTTPMessage = response.Status
+	json.NewDecoder(response.Body).Decode(&returnAction)
+
+	return returnAction, nil
+}
+
+// SendMessage this function for send message to the requester
+func SendMessage(chatID string, message string, token string) (ReturnSendMessage, error) {
+	telegramURLOfficial := "https://api.telegram.org/bot" + token + "/sendMessage"
+
+	request, _ := http.NewRequest("POST", telegramURLOfficial, nil)
+
+	q := request.URL.Query()
+	q.Add("chat_id", chatID)
+	q.Add("text", message)
+
+	request.URL.RawQuery = q.Encode()
+	client := &http.Client{}
+	response, err := client.Do(request)
+
+	if err != nil {
+		return ReturnSendMessage{}, err
+	}
+	defer response.Body.Close()
+
+	// make the data more human vision
+	var returnAction ReturnSendMessage
 	returnAction.HTTPCODE = response.StatusCode
 	returnAction.HTTPMessage = response.Status
 	json.NewDecoder(response.Body).Decode(&returnAction)
