@@ -41,7 +41,7 @@ type ResultGetWebhookInfo struct {
 
 // FromTelegram this sturct for handle from return from telegram
 type FromTelegram struct {
-	ID           string `json:"id" bson:"id" query:"id" form:"id"`
+	ID           int `json:"id" bson:"id" query:"id" form:"id"`
 	IsBot        bool   `json:"is_bot" bson:"is_bot" query:"is_bot" form:"is_bot"`
 	FirstName    string `json:"first_name" bson:"first_name" query:"first_name" form:"first_name"`
 	LastName     string `json:"last_name" bson:"last_name" query:"last_name" form:"last_name"`
@@ -51,7 +51,7 @@ type FromTelegram struct {
 
 // ChatTelegram this struct for handler chat from telegram
 type ChatTelegram struct {
-	ID        string `json:"id" bson:"id" query:"id" form:"id"`
+	ID        int `json:"id" bson:"id" query:"id" form:"id"`
 	FirstName string `json:"first_name" bson:"first_name" query:"first_name" form:"first_name"`
 	LastName  string `json:"last_name" bson:"last_name" query:"last_name" form:"last_name"`
 	Username  string `json:"username" bson:"username" query:"username" form:"username"`
@@ -60,16 +60,16 @@ type ChatTelegram struct {
 
 // ReplyToMessage this struct for handler ReplyMessage from telegram
 type ReplyToMessage struct {
-	MessageID string       `json:"message_id" bson:"message_id" query:"message_id" form:"message_id"`
+	MessageID int       `json:"message_id" bson:"message_id" query:"message_id" form:"message_id"`
 	From      FromTelegram `json:"from" bson:"from" query:"from" form:"from"`
 	Chat      ChatTelegram `json:"chat" bson:"chat" query:"chat" form:"chat"`
-	Date      string       `json:"date" bson:"date" query:"date" form:"date"`
+	Date      int       `json:"date" bson:"date" query:"date" form:"date"`
 	Text      string       `json:"text" bson:"text" query:"text" form:"text"`
 }
 
 // ResultSendMessage this struct for handler the result send message with reply Mode and normal
 type ResultSendMessage struct {
-	MessageID      string         `json:"message_id" bson:"message_id" query:"message_id" form:"message_id"`
+	MessageID      int         `json:"message_id" bson:"message_id" query:"message_id" form:"message_id"`
 	From           FromTelegram   `json:"from" bson:"from" query:"from" form:"from"`
 	Chat           ChatTelegram   `json:"chat" bson:"chat" query:"chat" form:"chat"`
 	Date           string         `json:"date" bson:"date" query:"date" form:"date"`
