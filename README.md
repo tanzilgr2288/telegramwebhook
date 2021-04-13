@@ -116,3 +116,42 @@ func main() {
 }
 
 ```
+
+## Send Message with reply Mode With parse Mode Option
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/tanzilgr2288/telegramwebhook"
+)
+
+func main() {
+  // SendMessageReplyMode(chatID string, message string, replyID string, token string)
+  // will return you ReturnSendMessage struct
+	result, err := telegramwebhook.SendMessageReplyMode("chatId", "message", "replyID", "token", telegramwebhook.PARSE_TYPE_MARKDOWNV2)
+	// or 
+	result, err := telegramwebhook.SendMessageReplyMode("chatId", "message", "replyID", "token", telegramwebhook.PARSE_TYPE_HTML)
+
+}
+
+```
+
+## Send Message With parse Mode Option
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/tanzilgr2288/telegramwebhook"
+)
+
+func main() {
+  // SendMessage(chatID string, message string, token string)
+  // will return you ReturnSendMessage struct
+	result, err := telegramwebhook.SendMessage("chatId", "message", "token", telegramwebhook.PARSE_TYPE_MARKDOWNV2)
+	// or
+	result, err := telegramwebhook.SendMessage("chatId", "message", "token", telegramwebhook.PARSE_TYPE_HTML)
+}
+
+```
