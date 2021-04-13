@@ -11,6 +11,13 @@ import (
 // @file telegramWebhook.go
 // @since 28 Maret 2019
 
+const (
+	// Constanta for parse style HTMLs
+	PARSE_TYPE_HTML = "HTML"
+	// Constanta for parse style markdown V2
+	PARSE_TYPE_MARKDOWNV2 = "MarkdownV2"
+)
+
 // ReturnSetWebHookAndDelete for store and handle the return setWebHookInfo and Delete
 type ReturnSetWebHookAndDelete struct {
 	OK          bool   `json:"ok" bson:"ok" query:"ok" form:"ok"`
@@ -41,7 +48,7 @@ type ResultGetWebhookInfo struct {
 
 // FromTelegram this sturct for handle from return from telegram
 type FromTelegram struct {
-	ID           int `json:"id" bson:"id" query:"id" form:"id"`
+	ID           int    `json:"id" bson:"id" query:"id" form:"id"`
 	IsBot        bool   `json:"is_bot" bson:"is_bot" query:"is_bot" form:"is_bot"`
 	FirstName    string `json:"first_name" bson:"first_name" query:"first_name" form:"first_name"`
 	LastName     string `json:"last_name" bson:"last_name" query:"last_name" form:"last_name"`
@@ -51,7 +58,7 @@ type FromTelegram struct {
 
 // ChatTelegram this struct for handler chat from telegram
 type ChatTelegram struct {
-	ID        int `json:"id" bson:"id" query:"id" form:"id"`
+	ID        int    `json:"id" bson:"id" query:"id" form:"id"`
 	FirstName string `json:"first_name" bson:"first_name" query:"first_name" form:"first_name"`
 	LastName  string `json:"last_name" bson:"last_name" query:"last_name" form:"last_name"`
 	Username  string `json:"username" bson:"username" query:"username" form:"username"`
@@ -60,16 +67,16 @@ type ChatTelegram struct {
 
 // ReplyToMessage this struct for handler ReplyMessage from telegram
 type ReplyToMessage struct {
-	MessageID int       `json:"message_id" bson:"message_id" query:"message_id" form:"message_id"`
+	MessageID int          `json:"message_id" bson:"message_id" query:"message_id" form:"message_id"`
 	From      FromTelegram `json:"from" bson:"from" query:"from" form:"from"`
 	Chat      ChatTelegram `json:"chat" bson:"chat" query:"chat" form:"chat"`
-	Date      int       `json:"date" bson:"date" query:"date" form:"date"`
+	Date      int          `json:"date" bson:"date" query:"date" form:"date"`
 	Text      string       `json:"text" bson:"text" query:"text" form:"text"`
 }
 
 // ResultSendMessage this struct for handler the result send message with reply Mode and normal
 type ResultSendMessage struct {
-	MessageID      int         `json:"message_id" bson:"message_id" query:"message_id" form:"message_id"`
+	MessageID      int            `json:"message_id" bson:"message_id" query:"message_id" form:"message_id"`
 	From           FromTelegram   `json:"from" bson:"from" query:"from" form:"from"`
 	Chat           ChatTelegram   `json:"chat" bson:"chat" query:"chat" form:"chat"`
 	Date           string         `json:"date" bson:"date" query:"date" form:"date"`
@@ -205,6 +212,65 @@ func SendMessage(chatID string, message string, token string) (ReturnSendMessage
 	q := request.URL.Query()
 	q.Add("chat_id", chatID)
 	q.Add("text", message)
+
+	request.URL.RawQuery = q.Encode()
+	client := &http.Client{}
+	response, err := client.Do(request)
+
+	if err != nil {
+		return ReturnSendMessage{}, err
+	}
+	defer response.Body.Close()
+
+	// make the data more human vision
+	var returnAction ReturnSendMessage
+	returnAction.HTTPCODE = response.StatusCode
+	returnAction.HTTPMessage = response.Status
+	json.NewDecoder(response.Body).Decode(&returnAction)
+
+	return returnAction, nil
+}
+
+// SendMessageReplyModeWithParseOption this function for send message to the chatID with reply the previous Message with parse option
+func SendMessageReplyModeWithParseOption(chatID string, message string, replyID string, token string, parseOption string) (ReturnSendMessage, error) {
+	telegramURLOfficial := "https://api.telegram.org/bot" + token + "/sendMessage"
+
+	request, _ := http.NewRequest("POST", telegramURLOfficial, nil)
+
+	q := request.URL.Query()
+	q.Add("chat_id", chatID)
+	q.Add("text", message)
+	q.Add("reply_to_message_id", replyID)
+	q.Add("parse_mode", parseOption)
+
+	request.URL.RawQuery = q.Encode()
+	client := &http.Client{}
+	response, err := client.Do(request)
+
+	if err != nil {
+		return ReturnSendMessage{}, err
+	}
+	defer response.Body.Close()
+
+	// make the data more human vision
+	var returnAction ReturnSendMessage
+	returnAction.HTTPCODE = response.StatusCode
+	returnAction.HTTPMessage = response.Status
+	json.NewDecoder(response.Body).Decode(&returnAction)
+
+	return returnAction, nil
+}
+
+// SendMessageWithParseOption this function for send message to the requester With Parse Option
+func SendMessageWithParseOption(chatID string, message string, token string, parseOption string) (ReturnSendMessage, error) {
+	telegramURLOfficial := "https://api.telegram.org/bot" + token + "/sendMessage"
+
+	request, _ := http.NewRequest("POST", telegramURLOfficial, nil)
+
+	q := request.URL.Query()
+	q.Add("chat_id", chatID)
+	q.Add("text", message)
+	q.Add("parse_mode", parseOption)
 
 	request.URL.RawQuery = q.Encode()
 	client := &http.Client{}
