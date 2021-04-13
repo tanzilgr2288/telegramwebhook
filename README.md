@@ -129,9 +129,9 @@ import (
 func main() {
   // SendMessageReplyMode(chatID string, message string, replyID string, token string)
   // will return you ReturnSendMessage struct
-	result, err := telegramwebhook.SendMessageReplyMode("chatId", "message", "replyID", "token", telegramwebhook.PARSE_TYPE_MARKDOWNV2)
+	result, err := telegramwebhook.SendMessageReplyModeWithParseOption("chatId", "message", "replyID", "token", telegramwebhook.PARSE_TYPE_MARKDOWNV2)
 	// or 
-	result, err := telegramwebhook.SendMessageReplyMode("chatId", "message", "replyID", "token", telegramwebhook.PARSE_TYPE_HTML)
+	result, err := telegramwebhook.SendMessageReplyModeWithParseOption("chatId", "message", "replyID", "token", telegramwebhook.PARSE_TYPE_HTML)
 
 }
 
@@ -149,9 +149,9 @@ import (
 func main() {
   // SendMessage(chatID string, message string, token string)
   // will return you ReturnSendMessage struct
-	result, err := telegramwebhook.SendMessage("chatId", "message", "token", telegramwebhook.PARSE_TYPE_MARKDOWNV2)
+	result, err := telegramwebhook.SendMessageWithParseOption("chatId", "message", "token", telegramwebhook.PARSE_TYPE_MARKDOWNV2)
 	// or
-	result, err := telegramwebhook.SendMessage("chatId", "message", "token", telegramwebhook.PARSE_TYPE_HTML)
+	result, err := telegramwebhook.SendMessageWithParseOption("chatId", "message", "token", telegramwebhook.PARSE_TYPE_HTML)
 }
 
 ```
